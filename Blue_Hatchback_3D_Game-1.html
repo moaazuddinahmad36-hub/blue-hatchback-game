@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Blue Hatchback 3D</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#79bde8;font-family:Arial,sans-serif;touch-action:none}
+#world{position:fixed;inset:0;overflow:hidden;background:linear-gradient(#76b8e2 0 48%,#78a76a 48% 100%)}
+#road{position:absolute;width:42vw;min-width:260px;height:130%;left:50%;top:32%;transform:translateX(-50%);background:#30343a;clip-path:polygon(30% 0,70% 0,100% 100%,0 100%);box-shadow:0 0 0 7px #fff inset}
+#road:after{content:"";position:absolute;left:49%;top:0;width:2%;height:100%;background:repeating-linear-gradient(to bottom,#eee 0 6%,transparent 6% 13%);opacity:.9}
+.side{position:absolute;top:42%;width:25%;height:65%;background:repeating-linear-gradient(0deg,#5b824f 0 10px,#638c55 10px 20px);opacity:.8}
+#l{left:0}#r{right:0}
+.tree{position:absolute;width:45px;height:75px;background:#315f35;border-radius:50%;filter:drop-shadow(0 8px 3px #35543b)}
+.tree:after{content:"";position:absolute;left:18px;top:48px;width:10px;height:38px;background:#65462f}
+#car{position:absolute;left:50%;top:56%;width:210px;height:125px;transform:translate(-50%,-50%);transition:transform .06s linear}
+.body{position:absolute;left:12px;top:42px;width:186px;height:60px;background:#1655ed;border-radius:18px 22px 14px 14px;box-shadow:inset 0 -9px #0c35a4,0 10px 15px #0005}
+.roof{position:absolute;left:48px;top:13px;width:118px;height:50px;background:#11151b;border-radius:38px 42px 8px 8px;transform:skew(-7deg)}
+.glass{position:absolute;left:57px;top:21px;width:101px;height:31px;background:#1c2832;border-radius:22px 25px 4px 4px;z-index:2}
+.grille{position:absolute;left:3px;top:61px;width:48px;height:36px;background:#080b10;border-radius:12px;z-index:4;border:3px solid #777}
+.light{position:absolute;top:54px;width:27px;height:18px;background:#eefaff;border-radius:10px;z-index:5;box-shadow:0 0 12px #dff}
+.leftlight{left:49px}.rightlight{left:151px}
+.wheel{position:absolute;width:40px;height:40px;background:#111;border-radius:50%;bottom:2px;border:7px solid #aaa;z-index:7;box-shadow:inset 0 0 0 5px #20242a}
+.w1{left:26px}.w2{right:26px}
+#hud{position:fixed;z-index:20;inset:0;pointer-events:none;color:white}
+.info{position:absolute;top:10px;background:#08111bcc;border:1px solid #ffffff33;border-radius:13px;padding:8px 13px;text-shadow:0 2px 3px #000}
+#speed{left:10px;font-size:27px;font-weight:bold}.unit{font-size:10px;opacity:.7}
+#gear{right:10px;text-align:center;font-size:30px;font-weight:bold;color:#63bdff}
+#rpm{height:6px;width:130px;background:#39434c;border-radius:5px;overflow:hidden}.bar{height:100%;width:20%;background:#52ef79}
+#controls{position:fixed;z-index:30;left:0;right:0;bottom:8px;height:31vh;pointer-events:none}
+.pad{position:absolute;bottom:0;display:grid;gap:7px;pointer-events:auto}.btn{border:1px solid #fff4;background:#09121dcc;color:white;border-radius:14px;font-weight:bold;min-width:58px;min-height:54px;font-size:18px}.btn:active{background:#167bd4}
+#steer{left:9px;grid-template-columns:repeat(3,58px)}#actions{right:9px;grid-template-columns:repeat(2,74px)}
+#gears{position:absolute;left:50%;bottom:0;transform:translateX(-50%);display:flex;gap:4px;pointer-events:auto}
+.g{width:37px;height:37px;background:#101820dd;border:1px solid #fff4;border-radius:9px;color:#fff;font-weight:bold}.sel{background:#087ee0}
+#start{position:fixed;z-index:50;inset:0;background:linear-gradient(#07111ddd,#07111df5);display:flex;align-items:center;justify-content:center;text-align:center;color:white}
+.panel{width:min(90%,430px);padding:25px;border:1px solid #fff2;border-radius:22px;background:#09131de8}.panel h1{margin:0 0 8px}.panel p{opacity:.75;font-size:13px;line-height:1.5}.play{background:#1687e8;border:0;color:white;border-radius:13px;padding:13px 28px;font-size:18px;font-weight:bold}
+#rotate{display:none;position:fixed;z-index:100;inset:0;background:#060a0f;color:#fff;align-items:center;justify-content:center;text-align:center;font-size:20px;font-weight:bold;padding:25px}
+@media(orientation:portrait){#rotate{display:flex}}
+</style></head><body>
+<div id="world"><div class="side" id="l"></div><div class="side" id="r"></div><div id="road"></div>
+<div class="tree" style="left:7%;top:45%"></div><div class="tree" style="right:8%;top:54%;transform:scale(.8)"></div>
+<div class="tree" style="left:13%;top:70%;transform:scale(.65)"></div><div class="tree" style="right:14%;top:74%;transform:scale(.7)"></div>
+<div id="car"><div class="roof"></div><div class="glass"></div><div class="body"></div><div class="grille"></div><div class="light leftlight"></div><div class="light rightlight"></div><div class="wheel w1"></div><div class="wheel w2"></div></div></div>
+<div id="hud"><div class="info" id="speed">0<div class="unit">KM/H</div></div><div class="info" id="gear">1<div id="rpm"><div class="bar" id="bar"></div></div></div></div>
+<div id="controls"><div class="pad" id="steer"><button class="btn" data-k="left">◀</button><button class="btn" data-k="up">▲</button><button class="btn" data-k="right">▶</button><button class="btn" data-k="down">▼</button></div>
+<div class="pad" id="actions"><button class="btn" data-k="brake">BRAKE</button><button class="btn" data-k="gas">GAS</button><button class="btn" id="reset">RESET</button><button class="btn" id="cam">CAM</button></div>
+<div id="gears"><button class="g" data-g="-1">R</button><button class="g" data-g="1">1</button><button class="g" data-g="2">2</button><button class="g" data-g="3">3</button><button class="g" data-g="4">4</button><button class="g" data-g="5">5</button></div></div>
+<div id="start"><div class="panel"><h1>🚗 BLUE HATCHBACK 3D</h1><p>Landscape mobile driving • Reverse + 5 speed gears</p><button class="play" id="play">START ENGINE</button></div></div>
+<div id="rotate">📱 Phone को landscape में घुमाओ<br><small>फिर game खेलो</small></div>
+<script>
+const q=s=>document.querySelector(s), car=q('#car'), speedEl=q('#speed'),gearEl=q('#gear'),bar=q('#bar');
+let gear=1,speed=0,x=0,steer=0,gas=false,brake=false,left=false,right=false,cam=0,last=performance.now();
+const max={[-1]:12,1:20,2:32,3:48,4:67,5:90},acc={[-1]:15,1:19,2:14,3:10,4:7,5:5};
+function setGear(g){gear=g;gearEl.childNodes[0].nodeValue=(g<0?'R':g)+' ';document.querySelectorAll('.g').forEach(b=>b.classList.toggle('sel',+b.dataset.g===g))}
+setGear(1);
+function bind(el,k){el.addEventListener('pointerdown',e=>{e.preventDefault();window[k]=true;el.setPointerCapture(e.pointerId)});['pointerup','pointercancel'].forEach(t=>el.addEventListener(t,()=>window[k]=false))}
+document.querySelectorAll('[data-k]').forEach(b=>bind(b,b.dataset.k));
+document.querySelectorAll('.g').forEach(b=>b.addEventListener('pointerdown',()=>setGear(+b.dataset.g)));
+q('#reset').onclick=()=>{speed=0;x=0;steer=0};
+q('#cam').onclick=()=>{cam=(cam+1)%2};
+q('#play').onclick=()=>q('#start').style.display='none';
+addEventListener('keydown',e=>{let k=e.key.toLowerCase();if(k==='w'||k==='arrowup')gas=true;if(k==='s'||k==='arrowdown')brake=true;if(k==='a'||k==='arrowleft')left=true;if(k==='d'||k==='arrowright')right=true;if('12345'.includes(k))setGear(+k);if(k==='r')setGear(-1)});
+addEventListener('keyup',e=>{let k=e.key.toLowerCase();if(k==='w'||k==='arrowup')gas=false;if(k==='s'||k==='arrowdown')brake=false;if(k==='a'||k==='arrowleft')left=false;if(k==='d'||k==='arrowright')right=false});
+function loop(t){let dt=Math.min(.04,(t-last)/1000);last=t;let target=max[gear];if(gas)speed+=Math.sign(target)*acc[gear]*dt;else speed*=Math.pow(.991,dt*60);if(brake)speed*=Math.pow(.86,dt*60);speed=Math.max(-Math.abs(target),Math.min(Math.abs(target),speed));if(gear>0&&speed<0)speed=Math.min(0,speed+30*dt);if(gear<0&&speed>0)speed=Math.max(0,speed-30*dt);
+let si=(left?-1:0)+(right?1:0);steer+=(si-steer)*dt*9;x+=steer*speed*dt*.035;x=Math.max(-32,Math.min(32,x));car.style.left=`calc(50% + ${x}px)`;let km=Math.round(Math.abs(speed)*1.35);speedEl.childNodes[0].nodeValue=km+' ';bar.style.width=Math.min(100,Math.abs(speed)/Math.abs(target)*100)+'%';document.querySelector('#road').style.transform=`translateX(calc(-50% + ${-x*.7}px))`;requestAnimationFrame(loop)}
+requestAnimationFrame(loop);
+</script></body></html>
